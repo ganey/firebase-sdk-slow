@@ -1,14 +1,16 @@
-'use strict';
 const start = Date.now();
 
+const functions = require('@google-cloud/functions-framework');
+
 const admin = require("firebase-admin");
-const serviceAccount = require("credentials/serviceAccountKey.json");
+
+const serviceAccount = require("../credentials/serviceAccount.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 
-module.exports.index = async (event, context) => {
+functions.http('helloHttp', async (req, res) => {
 
     const user = await admin.auth().getUserByEmail('slow@example.com')
         .then((userRecord) => {
@@ -31,8 +33,5 @@ module.exports.index = async (event, context) => {
     });
 
     const end = Date.now();
-    return {
-        statusCode: 200,
-        body: 'Finished: ' + ((end - start) / 1000).toFixed(2),
-    };
-};
+    res.send( 'Finished: ' + ((end - start) / 1000).toFixed(2) );
+});
